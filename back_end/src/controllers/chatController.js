@@ -1,4 +1,5 @@
-const { chatTechnical } = require("../services/openaiService");
+// Archivo: backend/src/controllers/chatController.js
+const { chatTechnical } = require("../services/geminiService"); // Cambiamos la importación
 
 const handleChat = async (req, res) => {
   try {
@@ -9,6 +10,7 @@ const handleChat = async (req, res) => {
     const answer = await chatTechnical(question, context);
     res.json({ answer });
   } catch (error) {
+    console.error("Error en el chat:", error);
     res.status(500).json({ error: error.message });
   }
 };

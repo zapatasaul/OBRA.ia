@@ -1,17 +1,37 @@
+// Archivo: backend/src/controllers/analysisController.js
 const { extractText } = require("../utils/pdfExtractor");
-const { analyzeStructuralRisk } = require("../services/openaiService");
+const { analyzeStructuralRisk } = require("../services/geminiService"); // Cambiamos la importación
 
 const analyzePlan = async (req, res) => {
   try {
     if (!req.file) return res.status(400).json({ error: "Archivo requerido." });
     const location = req.body.location || "Ubicación no especificada";
 
-    const text = await extractText(req.file.buffer);
-    const analysis = await analyzeStructuralRisk(text, location);
+    const isImage = req.file.mimetype.startsWith("image/");
+    let analysis;
+    let extractedData = "Plano analizado visualmente por IA.";
 
-    res.json({ ...analysis, texto_extraido: text });
+    if (isImage) {
+      const base64Image = req.file.buffer.toString("base64");
+      // Le pasamos el mimetype dinámico a Gemini
+      analysis = await analyzeStructuralRisk(
+        base64Image,
+        location,
+        true,
+        req.file.mimetype,
+      );
+    } else {
+      const text = await extractText(req.file.buffer);
+      extractedData = text;
+      analysis = await analyzeStructuralRisk(text, location, false);
+    }
+
+    res.json({ ...analysis, texto_extraido: extractedData });
   } catch (error) {
-    res.status(500).json({ error: error.message });
+    console.error("Error en el análisis:", error);
+    res
+      .status(500)
+      .json({ error: error.message || "Error procesando el documento" });
   }
 };
 
