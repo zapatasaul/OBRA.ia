@@ -1,65 +1,104 @@
-import Image from "next/image";
+"use client";
+
+import { useState, ChangeEvent } from "react";
+import { analyzeDocument } from "./api/client";
+import AnalysisResult from "./components/AnalysisResult";
+import TechnicalChat from "./components/TechnicalChat";
+
+// Definición de tipos para la estructura de datos que devuelve el backend
+interface AnalysisData {
+  estructura: {
+    tipo: string;
+    factibilidad: string;
+    problemas_detectados: string[];
+    recomendaciones: string[];
+  };
+  riesgos: {
+    suelo: Array<{ riesgo: string; impacto: string; probabilidad: string; recomendacion: string }>;
+    clima: Array<{ riesgo: string; impacto: string; probabilidad: string; recomendacion: string }>;
+  };
+  texto_extraido: string;
+}
 
 export default function Home() {
+  const [file, setFile] = useState<File | null>(null);
+  const [location, setLocation] = useState<string>("");
+  const [analysisData, setAnalysisData] = useState<AnalysisData | null>(null);
+  const [loading, setLoading] = useState<boolean>(false);
+
+  const handleFileChange = (e: ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files && e.target.files.length > 0) {
+      setFile(e.target.files[0]);
+    }
+  };
+
+  const handleAnalyze = async () => {
+    if (!file || !location) {
+      alert("Sube un plano e ingresa la ubicación.");
+      return;
+    }
+    
+    setLoading(true);
+    try {
+      const data = await analyzeDocument(file, location);
+      setAnalysisData(data);
+    } catch (error) {
+      alert("Error procesando el análisis estructural.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return (
-    <div className="flex flex-col flex-1 items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex flex-1 w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the page.tsx file.
-          </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
+    <main className="min-h-screen bg-slate-100 p-8 font-sans">
+      <div className="max-w-6xl mx-auto">
+        <h1 className="text-3xl font-black text-slate-800 mb-2">OBRA.ai</h1>
+        <p className="text-slate-600 mb-8">Evaluación de Factibilidad Estructural y Análisis de Riesgos</p>
+
+        {!analysisData && (
+          <div className="bg-white p-6 rounded-lg shadow-md max-w-xl">
+            <div className="mb-4">
+              <label className="block text-sm font-bold text-slate-700 mb-2">
+                Plano o Memoria (PDF/Img)
+              </label>
+              <input 
+                type="file" 
+                onChange={handleFileChange} 
+                className="w-full border p-2 rounded" 
+                accept=".pdf,image/*"
+              />
+            </div>
+            <div className="mb-4">
+              <label className="block text-sm font-bold text-slate-700 mb-2">
+                Ubicación del Proyecto
+              </label>
+              <input 
+                type="text" 
+                placeholder="Ej: Ciudad de México, Suelo lacustre" 
+                className="w-full border p-2 rounded text-black"
+                value={location}
+                onChange={(e) => setLocation(e.target.value)}
+              />
+            </div>
+            <button 
+              onClick={handleAnalyze} 
+              disabled={loading}
+              className="w-full bg-slate-800 text-white font-bold py-3 rounded hover:bg-slate-700 disabled:opacity-50 transition-colors"
             >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
-          </p>
-        </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={16}
-            />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
-        </div>
-      </main>
-    </div>
+              {loading ? 'Calculando Factibilidad y Riesgos...' : 'Ejecutar Análisis Técnico'}
+            </button>
+          </div>
+        )}
+
+        {analysisData && (
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mt-8">
+            <AnalysisResult data={analysisData} />
+            <div className="h-[600px]">
+              <TechnicalChat context={analysisData} />
+            </div>
+          </div>
+        )}
+      </div>
+    </main>
   );
 }
