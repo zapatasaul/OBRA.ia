@@ -16,8 +16,18 @@ export const analyzeDocument = async (
   formData.append("proyectName", proyectName);
   formData.append("materials", materials);
 
-  const response = await axios.post(`${API_URL}/analyze-plan`, formData);
-  return response.data;
+  try {
+    const response = await axios.post(`${API_URL}/analyze-plan`, formData);
+    return response.data;
+  } catch (error) {
+    const serverMessage =
+      axios.isAxiosError(error) && error.response?.data?.error
+        ? error.response.data.error
+        : error instanceof Error
+          ? error.message
+          : String(error);
+    throw new Error(`Error al analizar el documento: ${serverMessage}`);
+  }
 };
 
 export const sendTechnicalQuery = async (question, context) => {

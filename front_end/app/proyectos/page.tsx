@@ -1,20 +1,31 @@
 "use client";
 
-import { useState, ChangeEvent } from "react";
+import { useState, useEffect, ChangeEvent } from "react";
 import { analyzeDocument } from "../api/client";
 import AnalysisResult from "../components/AnalysisResult";
 import TechnicalChat from "../components/TechnicalChat";
+
+interface ProblemDetected {
+    descripcion: string;
+    coordenadas_caja: [number, number, number, number];
+}
 
 interface AnalysisData {
     estructura: {
         tipo: string;
         factibilidad: string;
-        problemas_detectados: string[];
+        problemas_detectados: ProblemDetected[];
         recomendaciones: string[];
     };
     riesgos: {
-        suelo: Array<{ riesgo: string; impacto: string; probabilidad: string; recomendacion: string }>;
-        clima: Array<{ riesgo: string; impacto: string; probabilidad: string; recomendacion: string }>;
+        suelo: Array<{ riesgo: string; impacto: string; probabilidad: string; recomendacion: string; impacto_costo_tiempo: string }>;
+        clima: Array<{ riesgo: string; impacto: string; probabilidad: string; recomendacion: string; impacto_costo_tiempo: string }>;
+    };
+    impacto_global: {
+        nivel_riesgo_general: "Bajo" | "Medio" | "Alto" | "Crítico";
+        sobrecosto_estimado_porcentaje: string;
+        retraso_estimado_tiempo: string;
+        justificacion_financiera: string;
     };
     texto_extraido: string;
 }
@@ -26,6 +37,7 @@ export default function Proyectos() {
     const [proyectName, setProjectName] = useState<string>("");
     const [materials, setMaterials] = useState<string>("");
     const [analysisData, setAnalysisData] = useState<AnalysisData | null>(null);
+    const [previewUrl, setPreviewUrl] = useState<string | null>(null);
     const [loading, setLoading] = useState<boolean>(false);
     const [fileNames, setFileNames] = useState<string[]>([]);
 
@@ -34,8 +46,27 @@ export default function Proyectos() {
             const selectedFiles = Array.from(e.target.files);
             setFiles(selectedFiles);
             setFileNames(selectedFiles.map((selectedFile) => selectedFile.name));
+
+            const firstImage = selectedFiles.find((selectedFile) =>
+                selectedFile.type.startsWith("image/"),
+            );
+
+            if (firstImage) {
+                const preview = URL.createObjectURL(firstImage);
+                setPreviewUrl(preview);
+            } else {
+                setPreviewUrl(null);
+            }
         }
     };
+
+    useEffect(() => {
+        return () => {
+            if (previewUrl) {
+                URL.revokeObjectURL(previewUrl);
+            }
+        };
+    }, [previewUrl]);
 
     const handleAnalyze = async () => {
         if (files.length === 0 || !location) {
@@ -47,7 +78,13 @@ export default function Proyectos() {
             const data = await analyzeDocument(files, location, conditions, proyectName, materials);
             setAnalysisData(data);
         } catch (error) {
-            alert("Error procesando el análisis estructural.");
+            const message =
+                error instanceof Error
+                    ? error.message
+                    : typeof error === "string"
+                    ? error
+                    : "Error procesando el análisis estructural.";
+            alert(message);
         } finally {
             setLoading(false);
         }
@@ -188,7 +225,7 @@ export default function Proyectos() {
 
             {analysisData && (
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                    <AnalysisResult data={analysisData} />
+                    <AnalysisResult data={analysisData} previewUrl={previewUrl} />
                     <div className="h-[600px]">
                         <TechnicalChat context={analysisData} />
                     </div>
