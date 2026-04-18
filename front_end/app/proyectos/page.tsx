@@ -73,6 +73,64 @@ export default function Proyectos() {
                         <div className="h-1 bg-gray-700 w-full" />
 
                         <div className="p-6 space-y-5">
+                            {/* Input nombre del proyecto */}
+                            <div>
+                                <label className="block text-xs font-bold text-slate-500 uppercase tracking-widest mb-2">
+                                    Nombre del Proyecto
+                                </label>
+                                <input
+                                    type="text"
+                                    placeholder="Ej: Torre Habitacional Norte"
+                                    className="w-full border border-slate-200 focus:border-gray-500 focus:ring-2 focus:ring-gray-100 rounded-lg px-4 py-3 text-sm text-slate-800 placeholder:text-slate-400 outline-none transition-all"
+                                    value={proyectName}
+                                    onChange={(e) => setProjectName(e.target.value)}
+                                />
+                            </div>
+
+
+                            {/* Input ubicación */}
+                            <div>
+                                <label className="block text-xs font-bold text-slate-500 uppercase tracking-widest mb-2">
+                                    Ubicación del Proyecto
+                                </label>
+                                <input
+                                    type="text"
+                                    placeholder="Ej: Ciudad de México"
+                                    className="w-full border border-slate-200 focus:border-gray-500 focus:ring-2 focus:ring-gray-100 rounded-lg px-4 py-3 text-sm text-slate-800 placeholder:text-slate-400 outline-none transition-all"
+                                    value={location}
+                                    onChange={(e) => setLocation(e.target.value)}
+                                />
+                            </div>
+
+
+
+                            {/* Input condiciones del terreno */}
+                            <div>
+                                <label className="block text-xs font-bold text-slate-500 uppercase tracking-widest mb-2">
+                                    Condiciones del Terreno
+                                </label>
+                                <input
+                                    type="text"
+                                    placeholder="Ej: Pendiente suave, humedad alta, tipo de suelo"
+                                    className="w-full border border-slate-200 focus:border-gray-500 focus:ring-2 focus:ring-gray-100 rounded-lg px-4 py-3 text-sm text-slate-800 placeholder:text-slate-400 outline-none transition-all"
+                                    value={conditions}
+                                    onChange={(e) => setConditions(e.target.value)}
+                                />
+                            </div>
+
+                            {/* Input materiales principales */}
+                            <div>
+                                <label className="block text-xs font-bold text-slate-500 uppercase tracking-widest mb-2">
+                                    Materiales Principales y detalles
+                                </label>
+                                <input
+                                    type="text"
+                                    placeholder="Ej: Concreto armado, acero estructural"
+                                    className="w-full border border-slate-200 focus:border-gray-500 focus:ring-2 focus:ring-gray-100 rounded-lg px-4 py-3 text-sm text-slate-800 placeholder:text-slate-400 outline-none transition-all"
+                                    value={materials}
+                                    onChange={(e) => setMaterials(e.target.value)}
+                                />
+                            </div>
                             {/* Input archivo */}
                             <div>
                                 <label className="block text-xs font-bold text-slate-500 uppercase tracking-widest mb-2">
@@ -92,62 +150,6 @@ export default function Proyectos() {
                                         accept=".pdf,image/*"
                                     />
                                 </label>
-                            </div>
-
-                            {/* Input ubicación */}
-                            <div>
-                                <label className="block text-xs font-bold text-slate-500 uppercase tracking-widest mb-2">
-                                    Ubicación del Proyecto
-                                </label>
-                                <input
-                                    type="text"
-                                    placeholder="Ej: Ciudad de México, Suelo lacustre"
-                                    className="w-full border border-slate-200 focus:border-gray-500 focus:ring-2 focus:ring-gray-100 rounded-lg px-4 py-3 text-sm text-slate-800 placeholder:text-slate-400 outline-none transition-all"
-                                    value={location}
-                                    onChange={(e) => setLocation(e.target.value)}
-                                />
-                            </div>
-
-                            {/* Input nombre del proyecto */}
-                            <div>
-                                <label className="block text-xs font-bold text-slate-500 uppercase tracking-widest mb-2">
-                                    Nombre del Proyecto
-                                </label>
-                                <input
-                                    type="text"
-                                    placeholder="Ej: Torre Habitacional Norte"
-                                    className="w-full border border-slate-200 focus:border-gray-500 focus:ring-2 focus:ring-gray-100 rounded-lg px-4 py-3 text-sm text-slate-800 placeholder:text-slate-400 outline-none transition-all"
-                                    value={proyectName}
-                                    onChange={(e) => setProjectName(e.target.value)}
-                                />
-                            </div>
-
-                            {/* Input condiciones del terreno */}
-                            <div>
-                                <label className="block text-xs font-bold text-slate-500 uppercase tracking-widest mb-2">
-                                    Condiciones del Terreno
-                                </label>
-                                <input
-                                    type="text"
-                                    placeholder="Ej: Pendiente suave, humedad alta"
-                                    className="w-full border border-slate-200 focus:border-gray-500 focus:ring-2 focus:ring-gray-100 rounded-lg px-4 py-3 text-sm text-slate-800 placeholder:text-slate-400 outline-none transition-all"
-                                    value={conditions}
-                                    onChange={(e) => setConditions(e.target.value)}
-                                />
-                            </div>
-
-                            {/* Input materiales principales */}
-                            <div>
-                                <label className="block text-xs font-bold text-slate-500 uppercase tracking-widest mb-2">
-                                    Materiales Principales
-                                </label>
-                                <input
-                                    type="text"
-                                    placeholder="Ej: Concreto armado, acero estructural"
-                                    className="w-full border border-slate-200 focus:border-gray-500 focus:ring-2 focus:ring-gray-100 rounded-lg px-4 py-3 text-sm text-slate-800 placeholder:text-slate-400 outline-none transition-all"
-                                    value={materials}
-                                    onChange={(e) => setMaterials(e.target.value)}
-                                />
                             </div>
 
                             {/* Botón */}

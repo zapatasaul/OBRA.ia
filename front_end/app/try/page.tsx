@@ -1,7 +1,37 @@
+"use client";
+
 import Link from "next/link";
-import ProyectCard from "./components/proyectcard";
+import { useState, useEffect } from "react";
+import ProjectCard from "./components/ProjectCard";
+import { fetchProjects } from "../api/client";
+
+interface Project {
+  id: number;
+  proyectName: string;
+  date: string;
+  location: string;
+  conditions: string;
+  materials: string;
+}
 
 export default function Try() {
+    const [projects, setProjects] = useState<Project[]>([]);
+    const [loading, setLoading] = useState(true);
+
+    useEffect(() => {
+        const loadProjects = async () => {
+            try {
+                const data = await fetchProjects();
+                setProjects(data);
+            } catch (error) {
+                console.error("Error loading projects:", error);
+            } finally {
+                setLoading(false);
+            }
+        };
+        loadProjects();
+    }, []);
+
     return (
         <div className="w-full bg-gray-200 p-10 rounded-xl">
             <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
@@ -13,10 +43,18 @@ export default function Try() {
                     Crear nuevo proyecto
                 </Link>
             </div>
-            <div className="w-full">
-                <p className="text-slate-500 text-sm mt-1 p-4">
-                    <ProyectCard />
-                </p>
+            <div className="w-full mt-6">
+                {loading ? (
+                    <p className="text-slate-500 text-sm p-4">Cargando proyectos...</p>
+                ) : projects.length === 0 ? (
+                    <p className="text-slate-500 text-sm p-4">No hay proyectos disponibles.</p>
+                ) : (
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                        {projects.map((project) => (
+                            <ProjectCard key={project.id} project={project} />
+                        ))}
+                    </div>
+                )}
             </div>
 
         </div>
