@@ -20,30 +20,31 @@ interface AnalysisData {
 }
 
 export default function Proyectos() {
-    const [file, setFile] = useState<File | null>(null);
+    const [files, setFiles] = useState<File[]>([]);
     const [location, setLocation] = useState<string>("");
     const [conditions, setConditions] = useState<string>("");
     const [proyectName, setProjectName] = useState<string>("");
     const [materials, setMaterials] = useState<string>("");
     const [analysisData, setAnalysisData] = useState<AnalysisData | null>(null);
     const [loading, setLoading] = useState<boolean>(false);
-    const [fileName, setFileName] = useState<string>("");
+    const [fileNames, setFileNames] = useState<string[]>([]);
 
     const handleFileChange = (e: ChangeEvent<HTMLInputElement>) => {
         if (e.target.files && e.target.files.length > 0) {
-            setFile(e.target.files[0]);
-            setFileName(e.target.files[0].name);
+            const selectedFiles = Array.from(e.target.files);
+            setFiles(selectedFiles);
+            setFileNames(selectedFiles.map((selectedFile) => selectedFile.name));
         }
     };
 
     const handleAnalyze = async () => {
-        if (!file || !location) {
-            alert("Sube un plano e ingresa la ubicación.");
+        if (files.length === 0 || !location) {
+            alert("Sube al menos un archivo e ingresa la ubicación.");
             return;
         }
         setLoading(true);
         try {
-            const data = await analyzeDocument(file, location, conditions, proyectName, materials);
+            const data = await analyzeDocument(files, location, conditions, proyectName, materials);
             setAnalysisData(data);
         } catch (error) {
             alert("Error procesando el análisis estructural.");
@@ -139,8 +140,15 @@ export default function Proyectos() {
                                 <label className="flex items-center gap-3 cursor-pointer group">
                                     <div className="flex-1 border-2 border-dashed border-slate-200 group-hover:border-gray-400 rounded-lg p-4 transition-colors text-center">
                                         <p className="text-sm font-semibold text-slate-600 group-hover:text-gray-600 transition-colors">
-                                            {fileName ? fileName : "Haz clic para seleccionar PDF o imagen"}
+                                            {fileNames.length > 0
+                                                ? `${fileNames.length} archivo(s) seleccionado(s)`
+                                                : "Haz clic para seleccionar PDF o imagen"}
                                         </p>
+                                        {fileNames.length > 0 && (
+                                            <p className="text-xs text-slate-500 mt-1 break-all">
+                                                {fileNames.join(", ")}
+                                            </p>
+                                        )}
                                         <p className="text-xs text-slate-400 mt-1">.pdf, .png, .jpg, .jpeg</p>
                                     </div>
                                     <input
@@ -148,6 +156,7 @@ export default function Proyectos() {
                                         onChange={handleFileChange}
                                         className="hidden"
                                         accept=".pdf,image/*"
+                                        multiple
                                     />
                                 </label>
                             </div>

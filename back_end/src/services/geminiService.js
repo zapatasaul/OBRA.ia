@@ -3,12 +3,7 @@ const { GoogleGenerativeAI } = require("@google/generative-ai");
 // Inicializamos el cliente de Gemini
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
 
-const analyzeStructuralRisk = async (
-  content,
-  location,
-  isImage = false,
-  mimeType = null,
-) => {
+const analyzeStructuralRisk = async (inputs, location) => {
   try {
     // 🔥 Usamos la versión 2.5 exacta que te arrojó el diagnóstico
     const model = genAI.getGenerativeModel({
@@ -34,21 +29,26 @@ Devuelve un JSON estrictamente con la siguiente estructura:
   }
 }`;
 
-    let promptParts = [systemPrompt];
+    const promptParts = [systemPrompt];
+    const texts = Array.isArray(inputs?.texts) ? inputs.texts : [];
+    const images = Array.isArray(inputs?.images) ? inputs.images : [];
 
-    if (isImage) {
+    if (texts.length > 0) {
+      promptParts.push(`Contenido consolidado:\n${texts.join("\n\n")}`);
+    }
+
+    for (const image of images) {
       promptParts.push({
         inlineData: {
-          data: content, // string base64 limpio
-          mimeType: mimeType || "image/jpeg",
+          data: image.data,
+          mimeType: image.mimeType || "image/jpeg",
         },
       });
-      promptParts.push(
-        "Analiza las notas y diagramas de este plano estructural y extrae los datos solicitados en formato JSON.",
-      );
-    } else {
-      promptParts.push(`Documento extraído:\n${content}`);
     }
+
+    promptParts.push(
+      "Analiza toda la información adjunta (texto e imágenes) y extrae los datos solicitados en formato JSON.",
+    );
 
     const result = await model.generateContent(promptParts);
     const responseText = result.response.text();
