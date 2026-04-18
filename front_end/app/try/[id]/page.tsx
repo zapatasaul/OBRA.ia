@@ -30,8 +30,9 @@ export default function ProjectDetails({ params }: { params: { id: string } }) {
             const doc = new jsPDF({ unit: "pt", format: "a4" });
             const pageWidth = doc.internal.pageSize.getWidth();
             const pageHeight = doc.internal.pageSize.getHeight();
-            const margin = 40;
+            const margin = 50;
             const contentWidth = pageWidth - margin * 2;
+            const innerMargin = 10;
             let y = margin;
 
             const safe = (value: unknown) => {
@@ -51,24 +52,26 @@ export default function ProjectDetails({ params }: { params: { id: string } }) {
                 text: string,
                 color: [number, number, number] = [51, 65, 85],
             ) => {
-                ensureSpace(38);
+                const lines = doc.splitTextToSize(safe(text), contentWidth);
+                const requiredHeight = 14 + (lines.length * 11) + 8;
+                ensureSpace(requiredHeight);
+                
                 doc.setFont("helvetica", "bold");
-                doc.setFontSize(10);
+                doc.setFontSize(9);
                 doc.setTextColor(100, 116, 139);
                 doc.text(label.toUpperCase(), margin, y);
-                y += 14;
+                y += 11;
 
-                const lines = doc.splitTextToSize(safe(text), contentWidth);
                 doc.setFont("helvetica", "normal");
-                doc.setFontSize(11);
+                doc.setFontSize(10);
                 doc.setTextColor(color[0], color[1], color[2]);
 
                 for (const line of lines) {
-                    ensureSpace(16);
+                    ensureSpace(11);
                     doc.text(line, margin, y);
-                    y += 14;
+                    y += 11;
                 }
-                y += 8;
+                y += 6;
             };
 
             const drawBulletList = (
@@ -78,86 +81,122 @@ export default function ProjectDetails({ params }: { params: { id: string } }) {
             ) => {
                 if (!items?.length) return;
 
-                ensureSpace(24);
+                ensureSpace(20);
                 doc.setFont("helvetica", "bold");
-                doc.setFontSize(12);
+                doc.setFontSize(11);
                 doc.setTextColor(30, 41, 59);
                 doc.text(title, margin, y);
-                y += 16;
+                y += 12;
 
                 for (const item of items) {
-                    const lines = doc.splitTextToSize(safe(item), contentWidth - 18);
-                    ensureSpace(lines.length * 14 + 6);
+                    const bulletWidth = contentWidth - 16;
+                    const lines = doc.splitTextToSize(safe(item), bulletWidth);
+                    ensureSpace(lines.length * 10 + 4);
 
                     doc.setFillColor(bulletColor[0], bulletColor[1], bulletColor[2]);
-                    doc.circle(margin + 5, y - 4, 2, "F");
+                    doc.circle(margin + 6, y - 2, 2.2, "F");
 
                     doc.setFont("helvetica", "normal");
-                    doc.setFontSize(11);
+                    doc.setFontSize(10);
                     doc.setTextColor(51, 65, 85);
 
                     lines.forEach((line: string, index: number) => {
-                        doc.text(line, margin + 14, y + index * 14);
+                        doc.text(line, margin + 14, y + index * 10);
                     });
 
-                    y += lines.length * 14 + 4;
+                    y += lines.length * 10 + 3;
                 }
 
-                y += 8;
+                y += 4;
             };
 
             const drawRiskBlock = (title: string, risks: any[], accent: [number, number, number]) => {
                 if (!risks?.length) return;
 
-                ensureSpace(28);
+                ensureSpace(18);
                 doc.setFont("helvetica", "bold");
-                doc.setFontSize(13);
+                doc.setFontSize(11);
                 doc.setTextColor(accent[0], accent[1], accent[2]);
                 doc.text(title, margin, y);
-                y += 18;
+                y += 10;
 
                 risks.forEach((risk, idx) => {
-                    ensureSpace(88);
-                    doc.setFillColor(248, 250, 252);
-                    doc.setDrawColor(accent[0], accent[1], accent[2]);
-                    doc.roundedRect(margin, y - 11, contentWidth, 78, 6, 6, "FD");
-
+                    const textWidth = contentWidth - 2;
+                    
+                    // Título del riesgo
                     doc.setFont("helvetica", "bold");
-                    doc.setFontSize(11);
+                    doc.setFontSize(9);
                     doc.setTextColor(accent[0], accent[1], accent[2]);
-                    doc.text(`${idx + 1}. ${safe(risk?.riesgo)}`, margin + 10, y + 4);
+                    const titleText = `${idx + 1}. ${safe(risk?.riesgo)}`;
+                    const titleLines = doc.splitTextToSize(titleText, textWidth);
+                    ensureSpace(titleLines.length * 12 + 30);
+                    titleLines.forEach((line: string, index: number) => {
+                        doc.text(line, margin, y + index * 12);
+                    });
+                    y += titleLines.length * 12 + 5;
 
+                    // Impacto
                     doc.setFont("helvetica", "normal");
                     doc.setTextColor(51, 65, 85);
-                    doc.setFontSize(10);
-                    doc.text(`Impacto: ${safe(risk?.impacto)}`, margin + 10, y + 20);
-                    doc.text(`Probabilidad: ${safe(risk?.probabilidad)}`, margin + 10, y + 34);
+                    doc.setFontSize(9);
+                    const impactoText = `Impacto: ${safe(risk?.impacto)}`;
+                    const impactoLines = doc.splitTextToSize(impactoText, textWidth);
+                    impactoLines.forEach((line: string, index: number) => {
+                        doc.text(line, margin, y + index * 11);
+                    });
+                    y += impactoLines.length * 11 + 4;
 
-                    const recLines = doc.splitTextToSize(
-                        `Recomendacion: ${safe(risk?.recomendacion)}`,
-                        contentWidth - 20,
-                    );
-                    doc.text(recLines, margin + 10, y + 48);
-                    y += 90;
+                    // Probabilidad
+                    doc.setFont("helvetica", "normal");
+                    doc.setTextColor(51, 65, 85);
+                    doc.setFontSize(9);
+                    const probText = `Probabilidad: ${safe(risk?.probabilidad)}`;
+                    const probLines = doc.splitTextToSize(probText, textWidth);
+                    probLines.forEach((line: string, index: number) => {
+                        doc.text(line, margin, y + index * 11);
+                    });
+                    y += probLines.length * 11 + 4;
+
+                    // Recomendación
+                    doc.setFont("helvetica", "normal");
+                    doc.setTextColor(51, 65, 85);
+                    doc.setFontSize(9);
+                    const recText = `Recomendación: ${safe(risk?.recomendacion)}`;
+                    const recLines = doc.splitTextToSize(recText, textWidth);
+                    recLines.forEach((line: string, index: number) => {
+                        doc.text(line, margin, y + index * 11);
+                    });
+                    y += recLines.length * 11 + 8;
                 });
             };
 
             // Encabezado decorativo
             doc.setFillColor(31, 41, 55);
-            doc.roundedRect(margin, y, contentWidth, 92, 10, 10, "F");
+            doc.roundedRect(margin, y, contentWidth, 80, 6, 6, "F");
             doc.setFillColor(29, 78, 216);
-            doc.rect(margin, y + 78, contentWidth, 14, "F");
+            doc.rect(margin, y + 68, contentWidth, 12, "F");
 
             doc.setFont("helvetica", "bold");
-            doc.setFontSize(22);
+            doc.setFontSize(18);
             doc.setTextColor(255, 255, 255);
-            doc.text("Reporte Tecnico de Proyecto", margin + 18, y + 32);
+            
+            const titleLines = doc.splitTextToSize("Reporte Técnico de Proyecto", contentWidth - 20);
+            const titleStartY = y + (titleLines.length === 1 ? 22 : 16);
+            titleLines.forEach((line: string, idx: number) => {
+                doc.text(line, margin + 10, titleStartY + idx * 10);
+            });
 
             doc.setFont("helvetica", "normal");
-            doc.setFontSize(12);
-            doc.text(safe(project.proyectName), margin + 18, y + 52);
-            doc.text(`Fecha: ${new Date(project.date).toLocaleDateString("es-MX")}`, margin + 18, y + 70);
-            y += 118;
+            doc.setFontSize(10);
+            const projectNameLines = doc.splitTextToSize(safe(project.proyectName), contentWidth - 20);
+            let nameY = titleStartY + (titleLines.length * 10) + 6;
+            projectNameLines.forEach((line: string) => {
+                doc.text(line, margin + 10, nameY);
+                nameY += 10;
+            });
+            
+            doc.text(`Fecha: ${new Date(project.date).toLocaleDateString("es-MX")}`, margin + 10, nameY + 2);
+            y += 92;
 
             drawWrapped("Ubicacion", project.location);
             drawWrapped("Condiciones del Terreno", project.conditions);
@@ -165,29 +204,30 @@ export default function ProjectDetails({ params }: { params: { id: string } }) {
             drawWrapped("Fecha de Analisis", new Date(project.date).toLocaleDateString("es-MX"));
 
             if (analysisData?.estructura) {
-                ensureSpace(30);
+                ensureSpace(24);
                 doc.setFont("helvetica", "bold");
-                doc.setFontSize(16);
+                doc.setFontSize(13);
                 doc.setTextColor(30, 64, 175);
-                doc.text("Analisis Estructural", margin, y);
-                y += 16;
+                doc.text("Análisis Estructural", margin, y);
+                y += 10;
 
                 drawWrapped("Tipo de Estructura", analysisData.estructura.tipo);
                 drawWrapped("Factibilidad", analysisData.estructura.factibilidad);
                 drawBulletList("Problemas Detectados", analysisData.estructura.problemas_detectados || [], [220, 38, 38]);
                 drawBulletList("Recomendaciones", analysisData.estructura.recomendaciones || [], [22, 163, 74]);
+                y += 4;
             }
 
             if (analysisData?.riesgos) {
-                ensureSpace(30);
+                ensureSpace(22);
                 doc.setFont("helvetica", "bold");
-                doc.setFontSize(16);
+                doc.setFontSize(13);
                 doc.setTextColor(146, 64, 14);
-                doc.text("Analisis de Riesgos", margin, y);
-                y += 18;
+                doc.text("Análisis de Riesgos", margin, y);
+                y += 10;
 
                 drawRiskBlock("Riesgos del Suelo", analysisData.riesgos.suelo || [], [180, 83, 9]);
-                drawRiskBlock("Riesgos Climaticos", analysisData.riesgos.clima || [], [29, 78, 216]);
+                drawRiskBlock("Riesgos Climáticos", analysisData.riesgos.clima || [], [29, 78, 216]);
             }
 
             const fileName = `reporte-${safe(project.proyectName).replace(/\s+/g, "-").toLowerCase()}.pdf`;
