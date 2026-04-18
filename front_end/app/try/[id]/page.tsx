@@ -341,58 +341,29 @@ export default function ProjectDetails({ params }: { params: { id: string } }) {
                             Análisis Estructural
                         </h2>
 
-                        <div>
-                            <h3 className="text-sm font-bold text-slate-700 uppercase tracking-widest mb-2">
-                                Tipo de Estructura
-                            </h3>
-                            <p className="text-slate-700">{analysisData.estructura.tipo}</p>
-                        </div>
-
-                        <div>
-                            <h3 className="text-sm font-bold text-slate-700 uppercase tracking-widest mb-2">
-                                Factibilidad
-                            </h3>
-                            <p className="text-slate-700">{analysisData.estructura.factibilidad}</p>
-                        </div>
-
-                        {analysisData.estructura.problemas_detectados?.length > 0 && (
-                            <div>
-                                <h3 className="text-sm font-bold text-red-700 uppercase tracking-widest mb-3">
-                                    Problemas Detectados
-                                </h3>
-                                <ul className="space-y-2">
-                                    {analysisData.estructura.problemas_detectados.map(
-                                        (problema: string, idx: number) => (
-                                            <li
-                                                key={idx}
-                                                className="text-sm text-slate-700 flex gap-3"
-                                            >
-                                                <span className="text-red-600 font-bold">•</span>
-                                                {problema}
-                                            </li>
-                                        )
-                                    )}
-                                </ul>
+                        <div className="grid grid-cols-2 gap-4 text-sm mb-4">
+                            <div className="bg-slate-50 p-3 rounded">
+                                <span className="font-semibold">Tipo:</span> {analysisData.estructura.tipo}
                             </div>
-                        )}
-
-                        {analysisData.estructura.recomendaciones?.length > 0 && (
-                            <div>
-                                <h3 className="text-sm font-bold text-green-700 uppercase tracking-widest mb-3">
-                                    Recomendaciones
-                                </h3>
-                                <ul className="space-y-2">
-                                    {analysisData.estructura.recomendaciones.map(
-                                        (rec: string, idx: number) => (
-                                            <li key={idx} className="text-sm text-slate-700 flex gap-3">
-                                                <span className="text-green-600 font-bold">✓</span>
-                                                {rec}
-                                            </li>
-                                        )
-                                    )}
-                                </ul>
+                            <div className="bg-slate-50 p-3 rounded">
+                                <span className="font-semibold">Viabilidad:</span>{" "}
+                                {analysisData.estructura.factibilidad}
                             </div>
-                        )}
+                        </div>
+                        <div className="text-sm">
+                            <p className="font-semibold text-red-600">Problemas Detectados:</p>
+                            <ul className="list-disc pl-5 mb-3">
+                                {analysisData.estructura.problemas_detectados.map((p: any, i: number) => (
+                                    <li key={i}>{typeof p === "string" ? p : p.descripcion}</li>
+                                ))}
+                            </ul>
+                            <p className="font-semibold text-green-700">Recomendaciones:</p>
+                            <ul className="list-disc pl-5">
+                                {analysisData.estructura.recomendaciones.map((r: string, i: number) => (
+                                    <li key={i}>{r}</li>
+                                ))}
+                            </ul>
+                        </div>
                     </div>
                 </div>
             )}

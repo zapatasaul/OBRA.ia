@@ -84,7 +84,6 @@ Devuelve ÚNICA Y ESTRICTAMENTE un JSON con este formato exacto:
     );
 
     const result = await model.generateContent(promptParts);
-    console.log(result.response.text());
     return JSON.parse(result.response.text());
   } catch (error) {
     console.error("❌ Error interno en Gemini (Análisis):", error);
