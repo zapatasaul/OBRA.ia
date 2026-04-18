@@ -50,7 +50,7 @@ export default function Proyectos() {
     };
 
     return (
-        <div className="min-h-full">
+        <div className="min-h-full bg-gray-200 p-10 rounded-xl">
             {/* Header de sección */}
             <div className="mb-8 border-b border-slate-200 pb-6">
                 <p className="text-xs font-bold tracking-widest text-blue-700 uppercase mb-1">
@@ -63,7 +63,7 @@ export default function Proyectos() {
             </div>
 
             {!analysisData && (
-                <div className="max-w-xl">
+                <div className="w-full">
                     {/* Card principal */}
                     <div className="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
                         {/* Franja superior azul */}

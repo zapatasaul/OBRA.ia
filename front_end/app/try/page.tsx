@@ -1,9 +1,10 @@
 import Link from "next/link";
+import ProyectCard from "./components/proyectcard";
 
 export default function Try() {
     return (
-        <div className="max-w-2xl">
-            <div className="flex flex-row justify-between">
+        <div className="w-full bg-gray-200 p-10 rounded-xl">
+            <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
                 <h2 className="text-2xl font-black text-slate-800 mb-4">Mis proyectos</h2>
                 <Link
                     href="/proyectos"
@@ -11,6 +12,11 @@ export default function Try() {
                 >
                     Crear nuevo proyecto
                 </Link>
+            </div>
+            <div className="w-full">
+                <p className="text-slate-500 text-sm mt-1 p-4">
+                    <ProyectCard />
+                </p>
             </div>
 
         </div>
