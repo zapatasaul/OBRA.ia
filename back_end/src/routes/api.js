@@ -7,9 +7,7 @@ const { getBaseDatabase } = require("../controllers/database");
 
 router.post("/analyze-plan", upload.single("file"), analyzePlan);
 router.post("/chat-tecnico", handleChat);
-router.get("/database/base", getBaseDatabase);
-router.get("/database", (req, res) => {
-    res.json({ message: "API is working!" });
-});
+router.get("/database", getBaseDatabase);
+
 
 module.exports = router;
