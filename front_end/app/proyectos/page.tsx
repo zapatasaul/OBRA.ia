@@ -22,6 +22,9 @@ interface AnalysisData {
 export default function Proyectos() {
     const [file, setFile] = useState<File | null>(null);
     const [location, setLocation] = useState<string>("");
+    const [conditions, setConditions] = useState<string>("");
+    const [proyectName, setProjectName] = useState<string>("");
+    const [materials, setMaterials] = useState<string>("");
     const [analysisData, setAnalysisData] = useState<AnalysisData | null>(null);
     const [loading, setLoading] = useState<boolean>(false);
     const [fileName, setFileName] = useState<string>("");
@@ -40,7 +43,7 @@ export default function Proyectos() {
         }
         setLoading(true);
         try {
-            const data = await analyzeDocument(file, location);
+            const data = await analyzeDocument(file, location, conditions, proyectName, materials);
             setAnalysisData(data);
         } catch (error) {
             alert("Error procesando el análisis estructural.");
@@ -102,6 +105,48 @@ export default function Proyectos() {
                                     className="w-full border border-slate-200 focus:border-gray-500 focus:ring-2 focus:ring-gray-100 rounded-lg px-4 py-3 text-sm text-slate-800 placeholder:text-slate-400 outline-none transition-all"
                                     value={location}
                                     onChange={(e) => setLocation(e.target.value)}
+                                />
+                            </div>
+
+                            {/* Input nombre del proyecto */}
+                            <div>
+                                <label className="block text-xs font-bold text-slate-500 uppercase tracking-widest mb-2">
+                                    Nombre del Proyecto
+                                </label>
+                                <input
+                                    type="text"
+                                    placeholder="Ej: Torre Habitacional Norte"
+                                    className="w-full border border-slate-200 focus:border-gray-500 focus:ring-2 focus:ring-gray-100 rounded-lg px-4 py-3 text-sm text-slate-800 placeholder:text-slate-400 outline-none transition-all"
+                                    value={proyectName}
+                                    onChange={(e) => setProjectName(e.target.value)}
+                                />
+                            </div>
+
+                            {/* Input condiciones del terreno */}
+                            <div>
+                                <label className="block text-xs font-bold text-slate-500 uppercase tracking-widest mb-2">
+                                    Condiciones del Terreno
+                                </label>
+                                <input
+                                    type="text"
+                                    placeholder="Ej: Pendiente suave, humedad alta"
+                                    className="w-full border border-slate-200 focus:border-gray-500 focus:ring-2 focus:ring-gray-100 rounded-lg px-4 py-3 text-sm text-slate-800 placeholder:text-slate-400 outline-none transition-all"
+                                    value={conditions}
+                                    onChange={(e) => setConditions(e.target.value)}
+                                />
+                            </div>
+
+                            {/* Input materiales principales */}
+                            <div>
+                                <label className="block text-xs font-bold text-slate-500 uppercase tracking-widest mb-2">
+                                    Materiales Principales
+                                </label>
+                                <input
+                                    type="text"
+                                    placeholder="Ej: Concreto armado, acero estructural"
+                                    className="w-full border border-slate-200 focus:border-gray-500 focus:ring-2 focus:ring-gray-100 rounded-lg px-4 py-3 text-sm text-slate-800 placeholder:text-slate-400 outline-none transition-all"
+                                    value={materials}
+                                    onChange={(e) => setMaterials(e.target.value)}
                                 />
                             </div>
 

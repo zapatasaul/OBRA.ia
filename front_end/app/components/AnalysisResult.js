@@ -5,7 +5,7 @@ export default function AnalysisResult({ data }) {
     <div className="space-y-6 bg-white p-6 rounded-lg shadow border border-gray-200">
       <section>
         <h2 className="text-xl font-bold text-slate-800 border-b pb-2 mb-4">
-          🏗️ Factibilidad Estructural
+          Factibilidad Estructural
         </h2>
         <div className="grid grid-cols-2 gap-4 text-sm mb-4">
           <div className="bg-slate-50 p-3 rounded">
@@ -34,7 +34,7 @@ export default function AnalysisResult({ data }) {
 
       <section>
         <h2 className="text-xl font-bold text-slate-800 border-b pb-2 mb-4">
-          🌍 Riesgos de Obra
+          Riesgos de Obra
         </h2>
 
         <h3 className="font-bold text-amber-700 mt-4 mb-2">

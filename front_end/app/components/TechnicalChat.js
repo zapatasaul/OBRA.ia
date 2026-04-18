@@ -28,7 +28,7 @@ export default function TechnicalChat({ context }) {
   return (
     <div className="flex flex-col h-full bg-slate-900 text-slate-200 rounded-lg shadow p-4">
       <h2 className="text-lg font-bold mb-4 border-b border-slate-700 pb-2">
-        👷 Chat Residente de Obra
+        Chat Residente de Obra
       </h2>
       <div className="flex-1 overflow-y-auto space-y-4 mb-4 text-sm">
         {messages.map((m, i) => (
